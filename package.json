@@ -1,7 +1,7 @@
 {
   "name": "homebridge-remeha-etwist",
   "displayName": "Remeha eTwist",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Homebridge plugin for Remeha eTwist thermostats and heat pumps via the Remeha Home cloud.",
   "license": "MIT",
   "bugs": {
