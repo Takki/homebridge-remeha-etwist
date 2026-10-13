@@ -1,5 +1,6 @@
 # homebridge-remeha-etwist
 
+[![npm](https://img.shields.io/npm/v/homebridge-remeha-etwist)](https://www.npmjs.com/package/homebridge-remeha-etwist)
 [![Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-t4kki-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/t4kki)
 
 Homebridge plugin for Remeha eTwist thermostats, through the same cloud API the Remeha Home app uses.
@@ -25,10 +26,10 @@ Homebridge plugin for Remeha eTwist thermostats, through the same cloud API the 
 
 Your thermostat must already be set up in the **Remeha Home** app.
 
-From GitHub (no build tools needed, the compiled plugin is in the repository):
+Search for **Remeha eTwist** in the Plugins tab of the Homebridge UI and click **Install**, or:
 
 ```sh
-npm install -g https://github.com/Takki/homebridge-remeha-etwist/archive/refs/heads/main.tar.gz
+npm install -g homebridge-remeha-etwist
 ```
 
 Homebridge running as a LoxBerry plugin uses its own npm folder, and its npm cache may not be writable:
@@ -36,12 +37,10 @@ Homebridge running as a LoxBerry plugin uses its own npm folder, and its npm cac
 ```sh
 npm install -g --cache /tmp/npm-cache \
   --prefix /opt/loxberry/data/plugins/homebridge/homebridge_runtime/npm-global \
-  https://github.com/Takki/homebridge-remeha-etwist/archive/refs/heads/main.tar.gz
+  homebridge-remeha-etwist
 ```
 
-Use the tarball URL, not `git+https://`: a global install from a git URL links to a temporary folder that npm later deletes.
-
-From a local checkout: `npm install && npm run build && npm link`.
+The latest development version from GitHub: `npm install -g https://github.com/Takki/homebridge-remeha-etwist/archive/refs/heads/main.tar.gz` (use the tarball URL, not `git+https://`).
 
 Then restart Homebridge and configure **Remeha eTwist** in the Homebridge UI, or add this to `config.json`:
 
