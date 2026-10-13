@@ -59,8 +59,8 @@ export class RemehaHomePlatform {
         const seen = new Set();
         for (const appliance of dashboard.appliances ?? []) {
             for (const zone of appliance.climateZones ?? []) {
-                this.upsert(seen, `climate:${zone.climateZoneId}`, zone.name, acc => new ClimateZoneAccessory(this, acc))
-                    .update(zone);
+                this.upsert(seen, `climate:${zone.climateZoneId}`, zone.name, acc => new ClimateZoneAccessory(this, acc, zone.name))
+                    .update({ ...zone, activeThermalMode: appliance.activeThermalMode });
             }
             if (this.config.exposeHotWater ?? true) {
                 for (const zone of appliance.hotWaterZones ?? []) {

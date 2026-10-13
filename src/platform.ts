@@ -21,6 +21,8 @@ export interface RemehaConfig extends PlatformConfig {
   password?: string;
   pollInterval?: number;
   setpointChangeInScheduleMode?: 'temporary' | 'manual';
+  exposeProgramSwitches?: boolean;
+  cooling?: 'auto' | 'on' | 'off';
   exposeHotWater?: boolean;
   exposeOutdoorTemperature?: boolean;
   exposeWaterPressureAlert?: boolean;
@@ -92,8 +94,8 @@ export class RemehaHomePlatform implements DynamicPlatformPlugin {
 
     for (const appliance of dashboard.appliances ?? []) {
       for (const zone of appliance.climateZones ?? []) {
-        this.upsert(seen, `climate:${zone.climateZoneId}`, zone.name, acc => new ClimateZoneAccessory(this, acc))
-          .update(zone);
+        this.upsert(seen, `climate:${zone.climateZoneId}`, zone.name, acc => new ClimateZoneAccessory(this, acc, zone.name))
+          .update({ ...zone, activeThermalMode: appliance.activeThermalMode });
       }
 
       if (this.config.exposeHotWater ?? true) {

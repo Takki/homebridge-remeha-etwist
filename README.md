@@ -10,6 +10,8 @@ Homebridge plugin for Remeha eTwist thermostats, through the same cloud API the 
 | Accessory | Shows | Controls |
 |---|---|---|
 | **Thermostat** per climate zone | Room temperature, setpoint, heating on/off | **Auto** = schedule, **Heat** = manual, **Off** = frost protection; changing the temperature while on schedule makes a temporary override (or switches to manual, see config) |
+| **Program 1 / 2 / 3** switches per zone | Which heating program is active | Turning one on activates that program and puts the zone on schedule (radio buttons: one is always on). Rename them in the Home app, e.g. "Weekday", "Away" |
+| **Cooling** (heat pumps) | Shows Cool and "Cooling" when the heat pump cools | The heat pump switches between heating and cooling itself; the API has no call for it, so Heat and Cool both set manual mode |
 | **Hot Water** thermostat | Comfort setpoint, heating on/off | **Heat** = continuous comfort, **Auto** = schedule, **Off** = eco; temperature sets the comfort setpoint |
 | **Boiler › Outdoor Temperature** | Outdoor temperature (boiler sensor, falls back to the cloud weather value) | |
 | **Boiler › Water Pressure** | Leak sensor that trips when the boiler reports low water pressure, so you get a HomeKit notification | |
@@ -48,6 +50,8 @@ Then restart Homebridge and configure **Remeha Home** in the Homebridge UI, or a
       "password": "your-remeha-home-password",
       "pollInterval": 60,
       "setpointChangeInScheduleMode": "temporary",
+      "exposeProgramSwitches": true,
+      "cooling": "auto",
       "exposeHotWater": true,
       "exposeOutdoorTemperature": true,
       "exposeWaterPressureAlert": true

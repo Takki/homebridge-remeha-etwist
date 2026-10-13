@@ -37,6 +37,9 @@ export class RemehaApi {
     setClimateSchedule(zoneId, heatingProgramId) {
         return this.request('POST', `/climate-zones/${zoneId}/modes/schedule`, { heatingProgramId });
     }
+    activateHeatingProgram(zoneId, programId) {
+        return this.request('POST', `/climate-zones/${zoneId}/time-programs/heating/${programId}/activate`);
+    }
     setClimateOff(zoneId) {
         return this.request('POST', `/climate-zones/${zoneId}/modes/anti-frost`);
     }

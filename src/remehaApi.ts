@@ -24,6 +24,9 @@ export interface ClimateZone {
   setPointMin: number;
   setPointMax: number;
   activeHeatingClimateTimeProgramNumber: number;
+  capabilityCooling?: boolean | string;
+  /** Not part of the zone in the API; copied from the appliance by the platform. */
+  activeThermalMode?: string;
 }
 
 export interface HotWaterZone {
@@ -46,6 +49,9 @@ export interface Appliance {
   applianceOnline: boolean;
   waterPressure: number | null;
   waterPressureOK: boolean;
+  activeThermalMode?: string;
+  capabilityCooling?: boolean | string;
+  capabilityMultiSchedule?: boolean | string;
   outdoorTemperatureInformation?: {
     applianceOutdoorTemperature: number | null;
     cloudOutdoorTemperature: number | null;
@@ -92,6 +98,10 @@ export class RemehaApi {
 
   setClimateSchedule(zoneId: string, heatingProgramId: number): Promise<void> {
     return this.request('POST', `/climate-zones/${zoneId}/modes/schedule`, { heatingProgramId });
+  }
+
+  activateHeatingProgram(zoneId: string, programId: number): Promise<void> {
+    return this.request('POST', `/climate-zones/${zoneId}/time-programs/heating/${programId}/activate`);
   }
 
   setClimateOff(zoneId: string): Promise<void> {
