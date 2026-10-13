@@ -1,0 +1,60 @@
+{
+  "pluginAlias": "RemehaHome",
+  "pluginType": "platform",
+  "singular": true,
+  "headerDisplay": "Control your Remeha eTwist thermostat through the Remeha Home cloud. Use the same account you use in the Remeha Home app.",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "title": "Name",
+        "type": "string",
+        "default": "Remeha Home",
+        "required": true
+      },
+      "email": {
+        "title": "Remeha Home email",
+        "type": "string",
+        "format": "email",
+        "required": true
+      },
+      "password": {
+        "title": "Remeha Home password",
+        "type": "string",
+        "required": true,
+        "x-schema-form": { "type": "password" }
+      },
+      "pollInterval": {
+        "title": "Poll interval (seconds)",
+        "type": "integer",
+        "default": 60,
+        "minimum": 30,
+        "maximum": 3600
+      },
+      "setpointChangeInScheduleMode": {
+        "title": "Temperature change while on schedule",
+        "type": "string",
+        "default": "temporary",
+        "oneOf": [
+          { "title": "Temporary override until next schedule switch", "enum": ["temporary"] },
+          { "title": "Switch to manual mode", "enum": ["manual"] }
+        ]
+      },
+      "exposeHotWater": {
+        "title": "Show hot water as a thermostat",
+        "type": "boolean",
+        "default": true
+      },
+      "exposeOutdoorTemperature": {
+        "title": "Show outdoor temperature sensor",
+        "type": "boolean",
+        "default": true
+      },
+      "exposeWaterPressureAlert": {
+        "title": "Show low water pressure alert (leak sensor)",
+        "type": "boolean",
+        "default": true
+      }
+    }
+  }
+}
