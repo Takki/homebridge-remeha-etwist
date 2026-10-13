@@ -1,8 +1,10 @@
 import { join } from 'node:path';
 import { ApplianceAccessory, ClimateZoneAccessory, HotWaterAccessory } from './accessories.js';
+import { MqttBridge } from './mqtt.js';
 import { RemehaApi, RemehaAuthError } from './remehaApi.js';
 export const PLUGIN_NAME = 'homebridge-remeha-home';
 export const PLATFORM_NAME = 'RemehaHome';
+const ENERGY_INTERVAL_MS = 15 * 60_000;
 export class RemehaHomePlatform {
     log;
     config;
@@ -14,6 +16,8 @@ export class RemehaHomePlatform {
     handlers = new Map();
     pollTimer;
     refreshTimer;
+    mqtt;
+    lastEnergyPoll = 0;
     constructor(log, config, api) {
         this.log = log;
         this.config = config;
@@ -25,10 +29,16 @@ export class RemehaHomePlatform {
             this.log.error('Email and password are required. Configure the plugin in the Homebridge UI.');
             return;
         }
-        api.on('didFinishLaunching', () => void this.poll());
+        api.on('didFinishLaunching', () => {
+            if (config.mqtt?.enabled && config.mqtt.host) {
+                this.mqtt = new MqttBridge(this);
+            }
+            void this.poll();
+        });
         api.on('shutdown', () => {
             clearTimeout(this.pollTimer);
             clearTimeout(this.refreshTimer);
+            this.mqtt?.close();
         });
     }
     configureAccessory(accessory) {
@@ -42,7 +52,10 @@ export class RemehaHomePlatform {
     async poll() {
         clearTimeout(this.pollTimer);
         try {
-            this.sync(await this.remeha.getDashboard());
+            const dashboard = await this.remeha.getDashboard();
+            this.sync(dashboard);
+            this.mqtt?.publishDashboard(dashboard);
+            await this.pollEnergy(dashboard);
         }
         catch (err) {
             if (err instanceof RemehaAuthError) {
@@ -54,6 +67,21 @@ export class RemehaHomePlatform {
         }
         const interval = Math.max(30, this.config.pollInterval ?? 60) * 1000;
         this.pollTimer = setTimeout(() => void this.poll(), interval);
+    }
+    /** Energy totals only change slowly in the cloud, so they are fetched less often. Only used for MQTT. */
+    async pollEnergy(dashboard) {
+        if (!this.mqtt || Date.now() - this.lastEnergyPoll < ENERGY_INTERVAL_MS) {
+            return;
+        }
+        this.lastEnergyPoll = Date.now();
+        for (const [i, appliance] of (dashboard.appliances ?? []).entries()) {
+            try {
+                this.mqtt.publishEnergy(i, await this.remeha.getEnergyToday(appliance.applianceId));
+            }
+            catch (err) {
+                this.log.warn(`Energy update failed: ${err.message}`);
+            }
+        }
     }
     sync(dashboard) {
         const seen = new Set();

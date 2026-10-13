@@ -70,6 +70,24 @@
         "title": "Show low water pressure alert (leak sensor)",
         "type": "boolean",
         "default": true
+      },
+      "mqtt": {
+        "title": "MQTT (e.g. LoxBerry MQTT Gateway, Home Assistant, Node-RED)",
+        "type": "object",
+        "properties": {
+          "enabled": { "title": "Publish to MQTT", "type": "boolean", "default": false },
+          "host": { "title": "Broker host", "type": "string", "placeholder": "192.168.0.10 or mqtts://broker:8883" },
+          "port": { "title": "Broker port", "type": "integer", "default": 1883 },
+          "username": { "title": "Username", "type": "string" },
+          "password": { "title": "Password", "type": "string", "x-schema-form": { "type": "password" } },
+          "topicPrefix": { "title": "Topic prefix", "type": "string", "default": "remeha" },
+          "allowControl": {
+            "title": "Accept commands on <topic>/set",
+            "description": "Off by default so MQTT can't conflict with other heat pump control such as SG Ready.",
+            "type": "boolean",
+            "default": false
+          }
+        }
       }
     }
   }

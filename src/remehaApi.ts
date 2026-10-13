@@ -25,6 +25,9 @@ export interface ClimateZone {
   setPointMax: number;
   activeHeatingClimateTimeProgramNumber: number;
   capabilityCooling?: boolean | string;
+  currentScheduleSetPoint?: number;
+  nextSetpoint?: number;
+  nextSwitchTime?: string;
   /** Not part of the zone in the API; copied from the appliance by the platform. */
   activeThermalMode?: string;
 }
@@ -41,6 +44,7 @@ export interface HotWaterZone {
   reducedSetpoint: number;
   setPointMin: number;
   setPointMax: number;
+  nextSwitchTime?: string;
 }
 
 export interface Appliance {
@@ -50,6 +54,7 @@ export interface Appliance {
   waterPressure: number | null;
   waterPressureOK: boolean;
   activeThermalMode?: string;
+  errorStatus?: string;
   capabilityCooling?: boolean | string;
   capabilityMultiSchedule?: boolean | string;
   outdoorTemperatureInformation?: {
@@ -59,6 +64,15 @@ export interface Appliance {
   };
   climateZones: ClimateZone[];
   hotWaterZones: HotWaterZone[];
+}
+
+export interface EnergyTotals {
+  heatingEnergyConsumed: number;
+  hotWaterEnergyConsumed: number;
+  coolingEnergyConsumed: number;
+  heatingEnergyDelivered: number;
+  hotWaterEnergyDelivered: number;
+  coolingEnergyDelivered: number;
 }
 
 export interface Dashboard {
@@ -98,6 +112,28 @@ export class RemehaApi {
 
   setClimateSchedule(zoneId: string, heatingProgramId: number): Promise<void> {
     return this.request('POST', `/climate-zones/${zoneId}/modes/schedule`, { heatingProgramId });
+  }
+
+  /** Today's energy totals in kWh, summed over the entries the API returns. */
+  async getEnergyToday(applianceId: string): Promise<EnergyTotals> {
+    // Same date format as the app: local midnight with a literal Z.
+    const day = new Date();
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const date = `${day.getFullYear()}-${pad(day.getMonth() + 1)}-${pad(day.getDate())}`;
+    const query = new URLSearchParams({ startDate: `${date} 00:00:00.000Z`, endDate: `${date} 23:59:59.000Z` });
+    const res = await this.request<{ data?: Partial<EnergyTotals>[] }>('GET',
+      `/appliances/${applianceId}/energyconsumption/daily?${query}`);
+
+    const totals: EnergyTotals = {
+      heatingEnergyConsumed: 0, hotWaterEnergyConsumed: 0, coolingEnergyConsumed: 0,
+      heatingEnergyDelivered: 0, hotWaterEnergyDelivered: 0, coolingEnergyDelivered: 0,
+    };
+    for (const entry of res?.data ?? []) {
+      for (const key of Object.keys(totals) as (keyof EnergyTotals)[]) {
+        totals[key] += Number(entry[key] ?? 0);
+      }
+    }
+    return totals;
   }
 
   activateHeatingProgram(zoneId: string, programId: number): Promise<void> {

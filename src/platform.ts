@@ -11,6 +11,7 @@ import type {
 } from 'homebridge';
 
 import { ApplianceAccessory, ClimateZoneAccessory, HotWaterAccessory, type ZoneAccessory } from './accessories.js';
+import { MqttBridge } from './mqtt.js';
 import { RemehaApi, RemehaAuthError, type Dashboard } from './remehaApi.js';
 
 export const PLUGIN_NAME = 'homebridge-remeha-home';
@@ -26,7 +27,18 @@ export interface RemehaConfig extends PlatformConfig {
   exposeHotWater?: boolean;
   exposeOutdoorTemperature?: boolean;
   exposeWaterPressureAlert?: boolean;
+  mqtt?: {
+    enabled?: boolean;
+    host?: string;
+    port?: number;
+    username?: string;
+    password?: string;
+    topicPrefix?: string;
+    allowControl?: boolean;
+  };
 }
+
+const ENERGY_INTERVAL_MS = 15 * 60_000;
 
 export class RemehaHomePlatform implements DynamicPlatformPlugin {
   readonly Service: typeof Service;
@@ -37,6 +49,8 @@ export class RemehaHomePlatform implements DynamicPlatformPlugin {
   private readonly handlers = new Map<string, ZoneAccessory>();
   private pollTimer?: NodeJS.Timeout;
   private refreshTimer?: NodeJS.Timeout;
+  private mqtt?: MqttBridge;
+  private lastEnergyPoll = 0;
 
   constructor(
     readonly log: Logging,
@@ -57,10 +71,16 @@ export class RemehaHomePlatform implements DynamicPlatformPlugin {
       return;
     }
 
-    api.on('didFinishLaunching', () => void this.poll());
+    api.on('didFinishLaunching', () => {
+      if (config.mqtt?.enabled && config.mqtt.host) {
+        this.mqtt = new MqttBridge(this);
+      }
+      void this.poll();
+    });
     api.on('shutdown', () => {
       clearTimeout(this.pollTimer);
       clearTimeout(this.refreshTimer);
+      this.mqtt?.close();
     });
   }
 
@@ -77,7 +97,10 @@ export class RemehaHomePlatform implements DynamicPlatformPlugin {
   private async poll(): Promise<void> {
     clearTimeout(this.pollTimer);
     try {
-      this.sync(await this.remeha.getDashboard());
+      const dashboard = await this.remeha.getDashboard();
+      this.sync(dashboard);
+      this.mqtt?.publishDashboard(dashboard);
+      await this.pollEnergy(dashboard);
     } catch (err) {
       if (err instanceof RemehaAuthError) {
         this.log.error(err.message);
@@ -87,6 +110,21 @@ export class RemehaHomePlatform implements DynamicPlatformPlugin {
     }
     const interval = Math.max(30, this.config.pollInterval ?? 60) * 1000;
     this.pollTimer = setTimeout(() => void this.poll(), interval);
+  }
+
+  /** Energy totals only change slowly in the cloud, so they are fetched less often. Only used for MQTT. */
+  private async pollEnergy(dashboard: Dashboard): Promise<void> {
+    if (!this.mqtt || Date.now() - this.lastEnergyPoll < ENERGY_INTERVAL_MS) {
+      return;
+    }
+    this.lastEnergyPoll = Date.now();
+    for (const [i, appliance] of (dashboard.appliances ?? []).entries()) {
+      try {
+        this.mqtt.publishEnergy(i, await this.remeha.getEnergyToday(appliance.applianceId));
+      } catch (err) {
+        this.log.warn(`Energy update failed: ${(err as Error).message}`);
+      }
+    }
   }
 
   private sync(dashboard: Dashboard): void {

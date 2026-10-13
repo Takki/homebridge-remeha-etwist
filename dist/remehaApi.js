@@ -37,6 +37,25 @@ export class RemehaApi {
     setClimateSchedule(zoneId, heatingProgramId) {
         return this.request('POST', `/climate-zones/${zoneId}/modes/schedule`, { heatingProgramId });
     }
+    /** Today's energy totals in kWh, summed over the entries the API returns. */
+    async getEnergyToday(applianceId) {
+        // Same date format as the app: local midnight with a literal Z.
+        const day = new Date();
+        const pad = (n) => String(n).padStart(2, '0');
+        const date = `${day.getFullYear()}-${pad(day.getMonth() + 1)}-${pad(day.getDate())}`;
+        const query = new URLSearchParams({ startDate: `${date} 00:00:00.000Z`, endDate: `${date} 23:59:59.000Z` });
+        const res = await this.request('GET', `/appliances/${applianceId}/energyconsumption/daily?${query}`);
+        const totals = {
+            heatingEnergyConsumed: 0, hotWaterEnergyConsumed: 0, coolingEnergyConsumed: 0,
+            heatingEnergyDelivered: 0, hotWaterEnergyDelivered: 0, coolingEnergyDelivered: 0,
+        };
+        for (const entry of res?.data ?? []) {
+            for (const key of Object.keys(totals)) {
+                totals[key] += Number(entry[key] ?? 0);
+            }
+        }
+        return totals;
+    }
     activateHeatingProgram(zoneId, programId) {
         return this.request('POST', `/climate-zones/${zoneId}/time-programs/heating/${programId}/activate`);
     }

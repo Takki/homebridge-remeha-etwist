@@ -56,13 +56,45 @@ Then restart Homebridge and configure **Remeha Home** in the Homebridge UI, or a
       "cooling": "auto",
       "exposeHotWater": true,
       "exposeOutdoorTemperature": true,
-      "exposeWaterPressureAlert": true
+      "exposeWaterPressureAlert": true,
+      "mqtt": {
+        "enabled": true,
+        "host": "192.168.0.10",
+        "username": "loxberry",
+        "password": "secret",
+        "topicPrefix": "remeha",
+        "allowControl": false
+      }
     }
   ]
 }
 ```
 
 The OAuth tokens are cached in `remeha-home-token.json` in the Homebridge storage folder, so the plugin doesn't log in again on every restart.
+
+## MQTT (optional)
+
+Publishes everything to an MQTT broker, e.g. the LoxBerry MQTT Gateway, Home Assistant or Node-RED. Enable it under **MQTT** in the plugin settings. Values are retained and only sent when they change; booleans are `1`/`0`.
+
+| Topic | Values |
+|---|---|
+| `remeha/status` | `online` / `offline` |
+| `remeha/boiler/…` | `online`, `water_pressure`, `water_pressure_ok`, `outdoor_temperature`, `thermal_mode`, `cooling`, `error_status` |
+| `remeha/zone/<name>/…` | `room_temperature`, `setpoint`, `mode` + `mode_code` (0 off, 1 manual, 2 schedule, 3 temporary), `program`, `heating`, `cooling`, `demand`, `schedule_setpoint`, `next_setpoint`, `next_switch_time` |
+| `remeha/hot_water/…` | `temperature`, `target_setpoint`, `comfort_setpoint`, `reduced_setpoint`, `mode` + `mode_code` (0 eco, 1 comfort, 2 schedule), `heating`, `status` |
+| `remeha/energy/…` | today's kWh: `heating_/hot_water_/cooling_consumed_today`, `…_delivered_today`, `consumed_today`, `delivered_today`, and `cop_today`, `heating_cop_today`, `hot_water_cop_today` (every 15 min) |
+
+`<name>` is the zone name in lowercase with `_` for spaces, e.g. `woonkamer`.
+
+With **Accept commands** enabled (off by default):
+
+| Topic | Payload |
+|---|---|
+| `remeha/zone/<name>/setpoint/set` | temperature, e.g. `21.5` |
+| `remeha/zone/<name>/mode/set` | `schedule`, `manual`, `off` (or `2`, `1`, `0`) |
+| `remeha/zone/<name>/program/set` | `1`, `2` or `3` |
+| `remeha/hot_water/comfort_setpoint/set` | temperature, e.g. `55` |
+| `remeha/hot_water/mode/set` | `comfort`, `schedule`, `eco` (or `1`, `2`, `0`) |
 
 ## Support
 
