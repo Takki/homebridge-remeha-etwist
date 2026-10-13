@@ -16,6 +16,7 @@ Homebridge plugin for Remeha eTwist thermostats, through the same cloud API the 
 | **Cooling** (heat pumps) | Shows Cool and "Cooling" when the heat pump cools | The heat pump switches between heating and cooling itself; the API has no call for it, so Heat and Cool both set manual mode |
 | **Hot Water** thermostat | Comfort setpoint, heating on/off | **Heat** = continuous comfort, **Auto** = schedule, **Off** = eco; temperature sets the comfort setpoint |
 | **Boiler › Outdoor Temperature** | Outdoor temperature (boiler sensor, falls back to the cloud weather value) | |
+| **Boiler › Holiday Mode** | Occupancy sensor: *detected* while holiday mode is on (set in the Remeha app; the API can't set it) | |
 | **Boiler › Water Pressure** | Leak sensor that trips when the boiler reports low water pressure, so you get a HomeKit notification | |
 
 ## Install
@@ -57,6 +58,7 @@ Then restart Homebridge and configure **Remeha Home** in the Homebridge UI, or a
       "exposeHotWater": true,
       "exposeOutdoorTemperature": true,
       "exposeWaterPressureAlert": true,
+      "exposeHolidayMode": true,
       "mqtt": {
         "enabled": true,
         "host": "192.168.0.10",
@@ -79,7 +81,7 @@ Publishes everything to an MQTT broker, e.g. the LoxBerry MQTT Gateway, Home Ass
 | Topic | Values |
 |---|---|
 | `remeha/status` | `online` / `offline` |
-| `remeha/boiler/…` | `online`, `water_pressure`, `water_pressure_ok`, `outdoor_temperature`, `thermal_mode`, `cooling`, `error_status` |
+| `remeha/boiler/…` | `online`, `water_pressure`, `water_pressure_ok`, `outdoor_temperature`, `thermal_mode`, `cooling`, `operating_mode`, `error_status`, `holiday` (1/0), `holiday_start`, `holiday_end` |
 | `remeha/zone/<name>/…` | `room_temperature`, `setpoint`, `mode` + `mode_code` (0 off, 1 manual, 2 schedule, 3 temporary), `program`, `heating`, `cooling`, `demand`, `schedule_setpoint`, `next_setpoint`, `next_switch_time` |
 | `remeha/hot_water/…` | `temperature`, `target_setpoint`, `comfort_setpoint`, `reduced_setpoint`, `mode` + `mode_code` (0 eco, 1 comfort, 2 schedule), `heating`, `status` |
 | `remeha/energy/…` | today's kWh: `heating_/hot_water_/cooling_consumed_today`, `…_delivered_today`, `consumed_today`, `delivered_today`, and `cop_today`, `heating_cop_today`, `hot_water_cop_today` (every 15 min) |

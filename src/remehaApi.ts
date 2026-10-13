@@ -55,6 +55,8 @@ export interface Appliance {
   waterPressureOK: boolean;
   activeThermalMode?: string;
   errorStatus?: string;
+  operatingMode?: string;
+  holidaySchedule?: { active: boolean; startTime: string; endTime: string };
   capabilityCooling?: boolean | string;
   capabilityMultiSchedule?: boolean | string;
   outdoorTemperatureInformation?: {

@@ -98,8 +98,9 @@ export class RemehaHomePlatform {
             }
             const outdoor = this.config.exposeOutdoorTemperature ?? true;
             const pressure = this.config.exposeWaterPressureAlert ?? true;
-            if (outdoor || pressure) {
-                this.upsert(seen, `appliance:${appliance.applianceId}`, 'Boiler', acc => new ApplianceAccessory(this, acc, outdoor, pressure))
+            const holiday = this.config.exposeHolidayMode ?? true;
+            if (outdoor || pressure || holiday) {
+                this.upsert(seen, `appliance:${appliance.applianceId}`, 'Boiler', acc => new ApplianceAccessory(this, acc, outdoor, pressure, holiday))
                     .update(appliance);
             }
         }

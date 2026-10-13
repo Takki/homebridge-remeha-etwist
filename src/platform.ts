@@ -27,6 +27,7 @@ export interface RemehaConfig extends PlatformConfig {
   exposeHotWater?: boolean;
   exposeOutdoorTemperature?: boolean;
   exposeWaterPressureAlert?: boolean;
+  exposeHolidayMode?: boolean;
   mqtt?: {
     enabled?: boolean;
     host?: string;
@@ -145,9 +146,10 @@ export class RemehaHomePlatform implements DynamicPlatformPlugin {
 
       const outdoor = this.config.exposeOutdoorTemperature ?? true;
       const pressure = this.config.exposeWaterPressureAlert ?? true;
-      if (outdoor || pressure) {
+      const holiday = this.config.exposeHolidayMode ?? true;
+      if (outdoor || pressure || holiday) {
         this.upsert(seen, `appliance:${appliance.applianceId}`, 'Boiler',
-          acc => new ApplianceAccessory(this, acc, outdoor, pressure))
+          acc => new ApplianceAccessory(this, acc, outdoor, pressure, holiday))
           .update(appliance);
       }
     }

@@ -72,6 +72,10 @@ export class MqttBridge {
                 thermal_mode: appliance.activeThermalMode,
                 cooling: appliance.activeThermalMode === 'Cooling',
                 error_status: appliance.errorStatus,
+                operating_mode: appliance.operatingMode,
+                holiday: appliance.holidaySchedule?.active === true,
+                holiday_start: realTime(appliance.holidaySchedule?.startTime),
+                holiday_end: realTime(appliance.holidaySchedule?.endTime),
             });
             for (const zone of appliance.climateZones ?? []) {
                 const slug = uniqueSlug(zone.name, zones);
@@ -257,6 +261,10 @@ function uniqueSlug(name, taken) {
         slug = `${base}_${n}`;
     }
     return slug;
+}
+/** The API uses 0001-01-01T00:00:00Z for "not set"; publish an empty value instead. */
+function realTime(value) {
+    return !value || value.startsWith('0001-') ? '' : value;
 }
 function round(value) {
     return Math.round(value * 1000) / 1000;

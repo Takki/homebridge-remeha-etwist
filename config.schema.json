@@ -71,6 +71,11 @@
         "type": "boolean",
         "default": true
       },
+      "exposeHolidayMode": {
+        "title": "Show holiday mode (occupancy sensor, detected = holiday mode on)",
+        "type": "boolean",
+        "default": true
+      },
       "mqtt": {
         "title": "MQTT (e.g. LoxBerry MQTT Gateway, Home Assistant, Node-RED)",
         "type": "object",

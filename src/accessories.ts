@@ -280,18 +280,23 @@ export class HotWaterAccessory extends BaseAccessory<HotWaterZone> {
   }
 }
 
-/** Boiler-level sensors: outdoor temperature and a leak sensor that trips on low water pressure. */
+/**
+ * Boiler-level sensors: outdoor temperature, a leak sensor that trips on low water pressure,
+ * and an occupancy sensor that is "detected" while holiday mode is on (read-only in the API).
+ */
 export class ApplianceAccessory extends BaseAccessory<Appliance> {
   private readonly outdoor?: Service;
   private readonly pressure?: Service;
+  private readonly holiday?: Service;
 
-  constructor(platform: RemehaHomePlatform, accessory: PlatformAccessory, outdoor: boolean, pressure: boolean) {
+  constructor(platform: RemehaHomePlatform, accessory: PlatformAccessory, outdoor: boolean, pressure: boolean, holiday: boolean) {
     super(platform, accessory, 'Boiler');
     const { Service, Characteristic } = platform;
 
     this.outdoor = this.ensure(Service.TemperatureSensor, outdoor, 'Outdoor Temperature');
     this.outdoor?.getCharacteristic(Characteristic.CurrentTemperature).setProps({ minValue: -50, maxValue: 60 });
     this.pressure = this.ensure(Service.LeakSensor, pressure, 'Water Pressure');
+    this.holiday = this.ensure(Service.OccupancySensor, holiday, 'Holiday Mode');
   }
 
   update(appliance: Appliance): void {
@@ -318,6 +323,19 @@ export class ApplianceAccessory extends BaseAccessory<Appliance> {
       if (!appliance.waterPressureOK) {
         this.platform.log.warn(`Boiler water pressure is low (${appliance.waterPressure ?? '?'} bar)`);
       }
+    }
+
+    if (this.holiday) {
+      const active = appliance.holidaySchedule?.active === true;
+      if (active !== this.accessory.context.holiday) {
+        this.accessory.context.holiday = active;
+        const { startTime, endTime } = appliance.holidaySchedule ?? {};
+        this.platform.log.info(active ? `Holiday mode on (${startTime} - ${endTime})` : 'Holiday mode off');
+      }
+      this.holiday.updateCharacteristic(Characteristic.OccupancyDetected, active
+        ? Characteristic.OccupancyDetected.OCCUPANCY_DETECTED
+        : Characteristic.OccupancyDetected.OCCUPANCY_NOT_DETECTED);
+      this.holiday.updateCharacteristic(Characteristic.StatusFault, fault);
     }
   }
 
