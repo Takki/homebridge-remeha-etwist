@@ -9,20 +9,19 @@
       "name": {
         "title": "Name",
         "type": "string",
-        "default": "Remeha eTwist",
-        "required": true
+        "default": "Remeha eTwist"
       },
       "email": {
         "title": "Remeha Home email",
         "type": "string",
-        "format": "email",
-        "required": true
+        "format": "email"
       },
       "password": {
         "title": "Remeha Home password",
         "type": "string",
-        "required": true,
-        "x-schema-form": { "type": "password" }
+        "x-schema-form": {
+          "type": "password"
+        }
       },
       "pollInterval": {
         "title": "Poll interval (seconds)",
@@ -36,8 +35,18 @@
         "type": "string",
         "default": "temporary",
         "oneOf": [
-          { "title": "Temporary override until next schedule switch", "enum": ["temporary"] },
-          { "title": "Switch to manual mode", "enum": ["manual"] }
+          {
+            "title": "Temporary override until next schedule switch",
+            "enum": [
+              "temporary"
+            ]
+          },
+          {
+            "title": "Switch to manual mode",
+            "enum": [
+              "manual"
+            ]
+          }
         ]
       },
       "exposeProgramSwitches": {
@@ -51,9 +60,24 @@
         "type": "string",
         "default": "auto",
         "oneOf": [
-          { "title": "Automatic (show once the heat pump reports cooling)", "enum": ["auto"] },
-          { "title": "Always show cooling", "enum": ["on"] },
-          { "title": "Never show cooling", "enum": ["off"] }
+          {
+            "title": "Automatic (show once the heat pump reports cooling)",
+            "enum": [
+              "auto"
+            ]
+          },
+          {
+            "title": "Always show cooling",
+            "enum": [
+              "on"
+            ]
+          },
+          {
+            "title": "Never show cooling",
+            "enum": [
+              "off"
+            ]
+          }
         ]
       },
       "exposeHotWater": {
@@ -80,12 +104,37 @@
         "title": "MQTT (e.g. LoxBerry MQTT Gateway, Home Assistant, Node-RED)",
         "type": "object",
         "properties": {
-          "enabled": { "title": "Publish to MQTT", "type": "boolean", "default": false },
-          "host": { "title": "Broker host", "type": "string", "placeholder": "192.168.0.10 or mqtts://broker:8883" },
-          "port": { "title": "Broker port", "type": "integer", "default": 1883 },
-          "username": { "title": "Username", "type": "string" },
-          "password": { "title": "Password", "type": "string", "x-schema-form": { "type": "password" } },
-          "topicPrefix": { "title": "Topic prefix", "type": "string", "default": "remeha" },
+          "enabled": {
+            "title": "Publish to MQTT",
+            "type": "boolean",
+            "default": false
+          },
+          "host": {
+            "title": "Broker host",
+            "type": "string",
+            "placeholder": "192.168.0.10 or mqtts://broker:8883"
+          },
+          "port": {
+            "title": "Broker port",
+            "type": "integer",
+            "default": 1883
+          },
+          "username": {
+            "title": "Username",
+            "type": "string"
+          },
+          "password": {
+            "title": "Password",
+            "type": "string",
+            "x-schema-form": {
+              "type": "password"
+            }
+          },
+          "topicPrefix": {
+            "title": "Topic prefix",
+            "type": "string",
+            "default": "remeha"
+          },
           "allowControl": {
             "title": "Accept commands on <topic>/set",
             "description": "Off by default so MQTT can't conflict with other heat pump control such as SG Ready.",
@@ -94,6 +143,11 @@
           }
         }
       }
-    }
+    },
+    "required": [
+      "name",
+      "email",
+      "password"
+    ]
   }
 }
