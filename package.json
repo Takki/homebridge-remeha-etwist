@@ -27,7 +27,7 @@
     "build": "rimraf ./dist && tsc",
     "watch": "tsc --watch",
     "lint": "tsc --noEmit",
-    "prepublishOnly": "npm run build"
+    "prepare": "npm run build"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
