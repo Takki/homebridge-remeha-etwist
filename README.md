@@ -1,5 +1,7 @@
 # homebridge-remeha-home
 
+[![Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-t4kki-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/t4kki)
+
 Homebridge plugin for Remeha eTwist thermostats, through the same cloud API the Remeha Home app uses.
 
 > Unofficial. The Remeha Home API is undocumented and may change without notice. Needs an internet connection.
@@ -61,6 +63,12 @@ Then restart Homebridge and configure **Remeha Home** in the Homebridge UI, or a
 ```
 
 The OAuth tokens are cached in `remeha-home-token.json` in the Homebridge storage folder, so the plugin doesn't log in again on every restart.
+
+## Support
+
+If this plugin keeps your house warm, you can buy me a coffee ☕
+
+<a href="https://buymeacoffee.com/t4kki"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=t4kki&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff" alt="Buy me a coffee" height="40"></a>
 
 ## Troubleshooting
 

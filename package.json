@@ -4,6 +4,18 @@
   "version": "0.1.0",
   "description": "Homebridge plugin for Remeha eTwist thermostats via the Remeha Home cloud.",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Takki/homebridge-remeha-home/issues"
+  },
+  "homepage": "https://github.com/Takki/homebridge-remeha-home#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Takki/homebridge-remeha-home.git"
+  },
+  "funding": {
+    "type": "buymeacoffee",
+    "url": "https://buymeacoffee.com/t4kki"
+  },
   "type": "module",
   "main": "dist/index.js",
   "files": [
