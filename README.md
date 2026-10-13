@@ -18,13 +18,23 @@ Homebridge plugin for Remeha eTwist thermostats, through the same cloud API the 
 
 Your thermostat must already be set up in the **Remeha Home** app.
 
-From a local checkout:
+From GitHub (no build tools needed, the compiled plugin is in the repository):
 
 ```sh
-npm install
-npm run build
-npm link            # on the Homebridge machine, or: npm install -g /path/to/homebridge-remeha-home
+npm install -g https://github.com/Takki/homebridge-remeha-home/archive/refs/heads/main.tar.gz
 ```
+
+Homebridge running as a LoxBerry plugin uses its own npm folder, and its npm cache may not be writable:
+
+```sh
+npm install -g --cache /tmp/npm-cache \
+  --prefix /opt/loxberry/data/plugins/homebridge/homebridge_runtime/npm-global \
+  https://github.com/Takki/homebridge-remeha-home/archive/refs/heads/main.tar.gz
+```
+
+Use the tarball URL, not `git+https://`: a global install from a git URL links to a temporary folder that npm later deletes.
+
+From a local checkout: `npm install && npm run build && npm link`.
 
 Then restart Homebridge and configure **Remeha Home** in the Homebridge UI, or add this to `config.json`:
 
