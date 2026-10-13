@@ -1,4 +1,4 @@
-# homebridge-remeha-home
+# homebridge-remeha-etwist
 
 [![Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-t4kki-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/t4kki)
 
@@ -6,6 +6,8 @@ Homebridge plugin for Remeha eTwist thermostats, through the same cloud API the 
 
 > Unofficial. The Remeha Home API is undocumented and may change without notice. Needs an internet connection.
 > API details come from [msvisser/remeha_home](https://github.com/msvisser/remeha_home).
+> Using Loxone? See the LoxBerry plugin [loxberry-remeha-etwist](https://github.com/Takki/loxberry-remeha-etwist).
+> Using Loxone? See the LoxBerry plugin [loxberry-remeha-etwist](https://github.com/Takki/loxberry-remeha-etwist).
 
 ## What you get in the Home app
 
@@ -26,7 +28,7 @@ Your thermostat must already be set up in the **Remeha Home** app.
 From GitHub (no build tools needed, the compiled plugin is in the repository):
 
 ```sh
-npm install -g https://github.com/Takki/homebridge-remeha-home/archive/refs/heads/main.tar.gz
+npm install -g https://github.com/Takki/homebridge-remeha-etwist/archive/refs/heads/main.tar.gz
 ```
 
 Homebridge running as a LoxBerry plugin uses its own npm folder, and its npm cache may not be writable:
@@ -34,21 +36,21 @@ Homebridge running as a LoxBerry plugin uses its own npm folder, and its npm cac
 ```sh
 npm install -g --cache /tmp/npm-cache \
   --prefix /opt/loxberry/data/plugins/homebridge/homebridge_runtime/npm-global \
-  https://github.com/Takki/homebridge-remeha-home/archive/refs/heads/main.tar.gz
+  https://github.com/Takki/homebridge-remeha-etwist/archive/refs/heads/main.tar.gz
 ```
 
 Use the tarball URL, not `git+https://`: a global install from a git URL links to a temporary folder that npm later deletes.
 
 From a local checkout: `npm install && npm run build && npm link`.
 
-Then restart Homebridge and configure **Remeha Home** in the Homebridge UI, or add this to `config.json`:
+Then restart Homebridge and configure **Remeha eTwist** in the Homebridge UI, or add this to `config.json`:
 
 ```json
 {
   "platforms": [
     {
       "platform": "RemehaHome",
-      "name": "Remeha Home",
+      "name": "Remeha eTwist",
       "email": "you@example.com",
       "password": "your-remeha-home-password",
       "pollInterval": 60,

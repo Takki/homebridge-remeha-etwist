@@ -14,7 +14,7 @@ import { ApplianceAccessory, ClimateZoneAccessory, HotWaterAccessory, type ZoneA
 import { MqttBridge } from './mqtt.js';
 import { RemehaApi, RemehaAuthError, type Dashboard } from './remehaApi.js';
 
-export const PLUGIN_NAME = 'homebridge-remeha-home';
+export const PLUGIN_NAME = 'homebridge-remeha-etwist';
 export const PLATFORM_NAME = 'RemehaHome';
 
 export interface RemehaConfig extends PlatformConfig {

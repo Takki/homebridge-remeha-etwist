@@ -2,7 +2,7 @@ import { join } from 'node:path';
 import { ApplianceAccessory, ClimateZoneAccessory, HotWaterAccessory } from './accessories.js';
 import { MqttBridge } from './mqtt.js';
 import { RemehaApi, RemehaAuthError } from './remehaApi.js';
-export const PLUGIN_NAME = 'homebridge-remeha-home';
+export const PLUGIN_NAME = 'homebridge-remeha-etwist';
 export const PLATFORM_NAME = 'RemehaHome';
 const ENERGY_INTERVAL_MS = 15 * 60_000;
 export class RemehaHomePlatform {

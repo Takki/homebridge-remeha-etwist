@@ -9,7 +9,7 @@
       "name": {
         "title": "Name",
         "type": "string",
-        "default": "Remeha Home",
+        "default": "Remeha eTwist",
         "required": true
       },
       "email": {
